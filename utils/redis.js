@@ -9,6 +9,7 @@ class RedisClient {
     });
   }
 
+  // Connect to Redis
   isAlive() {
     return this.client.connected;
   }
@@ -19,7 +20,7 @@ class RedisClient {
     try {
       return await getAsync(key);
     } catch (error) {
-      console.log("Error fetcing key from Redis:", error);
+      console.log("Error fetching key from Redis:", error);
       return null;
     }
   }
@@ -27,7 +28,7 @@ class RedisClient {
     // Use promisify to convert callback `set` to Promise
     const setAsync = promisify(this.client.setex).bind(this.client);
     try {
-      return await setAsync(key, value, duration);
+      return await setAsync(key, duration, value);
     } catch (error) {
       console.log("Error setting key in Redis:", error);
     }
