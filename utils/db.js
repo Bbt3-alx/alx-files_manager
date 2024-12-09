@@ -1,4 +1,4 @@
-import MongoClient from "mongodb";
+import { MongoClient } from "mongodb";
 //import dotenv from "dotenv";
 
 const DB_HOST = process.env.DB_HOST || "localhost";
@@ -9,21 +9,20 @@ class DBClient {
   constructor() {
     const uri = `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
     this.client = new MongoClient(uri, { useUnifiedTopology: true });
+    this.db = null;
 
-    this.client
-      .connect()
-      .then(() => {
-        this.db = this.client.db(DB_DATABASE);
-      })
-      .catch((error) => {
-        this.db = null;
-      });
+    this.client.connect((err) => {
+      if (err) {
+        consolze.error("Error conecting to MongoDB", err);
+        return;
+      }
+      console.log("Connected to MongoDB");
+      this.db = this.client.db(DB_DATABASE);
+    });
   }
 
   isAlive() {
-    return (
-      this.client && this.client.topology && this.client.topology.isConnected()
-    );
+    return this.client.isConnected();
   }
 
   async mbUsers() {
@@ -32,7 +31,7 @@ class DBClient {
       const count = await this.db.collection("users").countDocuments();
       return count;
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching user count:", error);
       return 0;
     }
   }
