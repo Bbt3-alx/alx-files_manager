@@ -1,5 +1,8 @@
-import { MongoClient } from "mongodb";
-//import dotenv from "dotenv";
+import pkg from "mongodb";
+const { MongoClient } = pkg;
+import dotenv from "dotenv";
+
+dotenv.config(); // Load environment variables
 
 const DB_HOST = process.env.DB_HOST || "localhost";
 const DB_PORT = process.env.DB_PORT || 27017;
@@ -7,25 +10,28 @@ const DB_DATABASE = process.env.DB_DATABASE || "file_manager";
 
 class DBClient {
   constructor() {
-    const uri = `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
-    this.client = new MongoClient(uri, { useUnifiedTopology: true });
+    this.client = new MongoClient(
+      `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`,
+      { useUnifiedTopology: true }
+    );
     this.db = null;
+  }
 
-    this.client.connect((err) => {
-      if (err) {
-        consolze.error("Error conecting to MongoDB", err);
-        return;
-      }
+  async connect() {
+    try {
+      await this.client.connect();
       console.log("Connected to MongoDB");
       this.db = this.client.db(DB_DATABASE);
-    });
+    } catch (err) {
+      console.error("Error connecting to MongoDB", err);
+    }
   }
 
   isAlive() {
-    return this.client.isConnected();
+    return this.client.topology.isConnected();
   }
 
-  async mbUsers() {
+  async nbUsers() {
     if (!this.db) return 0;
     try {
       const count = await this.db.collection("users").countDocuments();
@@ -42,11 +48,13 @@ class DBClient {
       const count = await this.db.collection("files").countDocuments();
       return count;
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching file count:", error);
       return 0;
     }
   }
 }
 
+// Instantiate and connect
 const dbClient = new DBClient();
+await dbClient.connect(); // Make sure to connect before using it
 export default dbClient;
