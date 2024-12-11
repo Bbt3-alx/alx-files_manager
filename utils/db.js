@@ -14,11 +14,12 @@ class DBClient {
     this.db = null;
   }
 
-  async connect() {
+  async connectDB() {
     try {
       await this.client.connect();
       console.log("Connected to MongoDB");
       this.db = this.client.db(DB_DATABASE);
+      return this.db;
     } catch (err) {
       console.error("Error connecting to MongoDB", err);
     }
@@ -57,5 +58,5 @@ class DBClient {
 
 // Instantiate and connect
 const dbClient = new DBClient();
-await dbClient.connect(); // Make sure to connect before using it
+await dbClient.connectDB(); // Make sure to connect before using it
 export default dbClient;

@@ -13,9 +13,7 @@ export const getStats = async (req, res) => {
   try {
     const nbUsers = await dbClient.nbUsers();
     const nbFiles = await dbClient.nbFiles();
-    if (nbUsers) {
-      res.status(200).json({ users: nbUsers, file: nbFiles });
-    }
+    res.status(200).json({ users: nbUsers, file: nbFiles });
   } catch (error) {
     console.log("Error in getStats:", error);
     res.status(500).json({ error: "Internal Server Error" });
