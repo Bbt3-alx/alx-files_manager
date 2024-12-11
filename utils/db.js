@@ -1,8 +1,5 @@
 import pkg from "mongodb";
 const { MongoClient } = pkg;
-import dotenv from "dotenv";
-
-dotenv.config(); // Load environment variables
 
 const DB_HOST = process.env.DB_HOST || "localhost";
 const DB_PORT = process.env.DB_PORT || 27017;
@@ -28,7 +25,11 @@ class DBClient {
   }
 
   isAlive() {
-    return this.client.topology.isConnected();
+    try {
+      return this.client.topology.isConnected();
+    } catch (error) {
+      return false;
+    }
   }
 
   async nbUsers() {
