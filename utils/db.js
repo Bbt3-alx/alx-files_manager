@@ -1,5 +1,8 @@
 import pkg from "mongodb";
 const { MongoClient } = pkg;
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const DB_HOST = process.env.DB_HOST || "localhost";
 const DB_PORT = process.env.DB_PORT || 27017;
@@ -11,18 +14,8 @@ class DBClient {
       `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`,
       { useUnifiedTopology: true }
     );
-    this.db = null;
-  }
-
-  async connectDB() {
-    try {
-      await this.client.connect();
-      console.log("Connected to MongoDB");
-      this.db = this.client.db(DB_DATABASE);
-      return this.db;
-    } catch (err) {
-      console.error("Error connecting to MongoDB", err);
-    }
+    this.client.connect();
+    this.db = this.client.db(DB_DATABASE);
   }
 
   isAlive() {
@@ -58,5 +51,4 @@ class DBClient {
 
 // Instantiate and connect
 const dbClient = new DBClient();
-await dbClient.connectDB(); // Make sure to connect before using it
 export default dbClient;
