@@ -1,7 +1,5 @@
-import pkg from "mongodb";
+import mongodb from "mongodb";
 import dotenv from "dotenv";
-
-const { MongoClient } = pkg;
 
 dotenv.config();
 
@@ -11,7 +9,7 @@ const DB_DATABASE = process.env.DB_DATABASE || "file_manager";
 
 class DBClient {
   constructor() {
-    this.client = new MongoClient(
+    this.client = new mongodb.MongoClient(
       `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`,
       { useUnifiedTopology: true }
     );
